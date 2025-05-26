@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
-from app.deps import get_db, get_current_user
+from app.deps import get_db
 from datetime import timedelta
 from app.core.config import settings
 from app.core.security import verify_password, create_access_token
@@ -14,7 +14,7 @@ from app.crud import user as user_crud
 from datetime import datetime, timedelta
 from app.core.redis import redis_client
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

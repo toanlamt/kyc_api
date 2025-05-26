@@ -1,6 +1,7 @@
 # app/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.routing import APIRouter
 from app.core.config import settings
 from app.api.v1 import auth, users #, profile, kyc, review, results
 from app.middleware.token_blacklist import TokenBlacklistMiddleware
@@ -28,13 +29,19 @@ app.add_middleware(
 
 app.add_middleware(TokenBlacklistMiddleware)
 
+# Create a router with a shared prefix
+api_router = APIRouter(prefix="/api/v1")
+
 # Include routers
-app.include_router(auth.router, prefix="/api/v1/auth")
-app.include_router(users.router, prefix="/api/v1/users")
-# app.include_router(profile.router, prefix="/api/v1/profile")
-# app.include_router(kyc.router, prefix="/api/v1/kyc")
-# app.include_router(review.router, prefix="/api/v1/review")
-# app.include_router(results.router, prefix="/api/v1/results")
+api_router.include_router(auth.router)
+api_router.include_router(users.router)
+# api_router.include_router(profile.router)
+# api_router.include_router(kyc.router)
+# api_router.include_router(review.router)
+# api_router.include_router(results.router)
+
+# Add the API router to the main app
+app.include_router(api_router)
 
 @app.get("/")
 def root():
