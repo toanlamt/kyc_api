@@ -1,10 +1,11 @@
 from pydantic import BaseModel
+from datetime import date
 from typing import Optional
 
 class EmploymentBase(BaseModel):
     company_name: str
-    from_year: int
-    to_year: Optional[int]
+    from_date: date
+    to_date: Optional[date]
 
 class EmploymentCreate(EmploymentBase):
     pass

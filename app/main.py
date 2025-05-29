@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
 from app.core.config import settings
-from app.api.v1 import auth, users #, profile, kyc, review, results
+from app.api.v1 import auth, users, profile #, kyc, review, results
 from app.middleware.token_blacklist import TokenBlacklistMiddleware
 
 app = FastAPI(
@@ -35,7 +35,7 @@ api_router = APIRouter(prefix="/api/v1")
 # Include routers
 api_router.include_router(auth.router)
 api_router.include_router(users.router)
-# api_router.include_router(profile.router)
+api_router.include_router(profile.router)
 # api_router.include_router(kyc.router)
 # api_router.include_router(review.router)
 # api_router.include_router(results.router)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from datetime import date
 from typing import Optional, List
 from app.schemas.address import AddressCreate, AddressResponse
@@ -17,7 +17,13 @@ class ProfileCreate(ProfileBase):
     addresses: List[AddressCreate] = []
     contacts: List[ContactCreate] = []
     employments: List[EmploymentCreate] = []
-    documents: DocumentCreate
+    documents: List[DocumentCreate] = []
+
+    @field_validator("documents")
+    def validate_documents(cls, value):
+        if not value or len(value) == 0:
+            raise ValueError("At least one document must be added.")
+        return value
 
 
 class ProfileUpdate(BaseModel):
@@ -29,7 +35,13 @@ class ProfileUpdate(BaseModel):
     addresses: Optional[List[AddressCreate]] = None
     contacts: Optional[List[ContactCreate]] = None
     employments: Optional[List[EmploymentCreate]] = None
-    documents: DocumentCreate
+    documents: Optional[List[DocumentCreate]] = None
+
+    @field_validator("documents")
+    def validate_documents(cls, value):
+        if not value or len(value) == 0:
+            raise ValueError("At least one document must be added.")
+        return value
 
 
 class ProfileResponse(ProfileBase):
@@ -37,7 +49,7 @@ class ProfileResponse(ProfileBase):
     user_id: int
     addresses: List[AddressResponse] = []
     contacts: List[ContactResponse] = []
-    documents: DocumentResponse
+    documents: List[DocumentResponse] = []
     employments: List[EmploymentResponse] = []
 
     class Config:
