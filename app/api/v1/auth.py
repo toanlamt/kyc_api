@@ -9,10 +9,10 @@ from app.core.config import settings
 from app.core.security import verify_password, create_access_token
 from app.models.user import User
 from app.schemas.user import UserCreate
-from app.schemas.profile import ProfileCreate
 from app.crud import user as user_crud
 from datetime import datetime, timedelta
 from app.core.redis import redis_client
+from app.core.security import hash_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -31,7 +31,14 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     expire_seconds = int(access_token_expires.total_seconds())
     redis_client.setex(token, expire_seconds, user.username)
 
-    response = JSONResponse(content={"msg": "Login successful"})
+    response = JSONResponse(content={
+        "msg": "Login successful",
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "role": user.role,
+        },
+    })
     response.set_cookie(
         key="access_token",
         value=token,
@@ -44,13 +51,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return response
 
 @router.post("/register")
-def register(user_data: UserCreate, profile_data: ProfileCreate, db: Session = Depends(get_db)):
+def register(user_data: UserCreate, db: Session = Depends(get_db)):
     # Check if the user already exists.
     if db.query(User).filter(User.username == user_data.username).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
     
-    user = user_crud.create_user_with_profile(db, user_data, profile_data)
-    return {"message": "User registered successfully", "user_id": user.id}
+    user = user_crud.create_user(db, user_data)
+    return {"msg": "User registered successfully", "user_id": user.id}
 
 @router.post("/logout")
 def logout(request: Request):
