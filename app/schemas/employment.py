@@ -5,7 +5,7 @@ from typing import Optional
 class EmploymentBase(BaseModel):
     company_name: str
     from_date: date
-    to_date: Optional[date]
+    to_date: Optional[date] = None
 
 class EmploymentCreate(EmploymentBase):
     pass
