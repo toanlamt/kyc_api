@@ -16,8 +16,10 @@ async def get_all_users(
     users = db.query(User).all()
     return users
 
-@router.get("/me", response_model=UserResponse)
-def get_me(current_user: User = Depends(get_current_user)):
+@router.get("/me") # Do not forget to add response_model=UserResponse.
+async def get_me(current_user: User = Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return current_user
 
 @router.get("/{user_id}", response_model=UserResponse)

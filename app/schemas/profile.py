@@ -13,17 +13,8 @@ class ProfileBase(BaseModel):
     dob: date
     age: Optional[int] = None
 
-    # Calculate age based on date of birth.
-    @field_validator("age", mode="before")
-    def calculate_age(cls, value, values):
-        dob = values.get("dob")
-        if dob:
-            today = date.today()
-            age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
-            return age
-        return None
-
-class ProfileCreate(ProfileBase):
+class ProfileCreate(BaseModel):
+    basicinfo: ProfileBase
     addresses: List[AddressCreate] = []
     contacts: List[ContactCreate] = []
     employments: List[EmploymentCreate] = []
@@ -37,11 +28,7 @@ class ProfileCreate(ProfileBase):
 
 
 class ProfileUpdate(BaseModel):
-    first_name: str
-    middle_name: Optional[str] = None
-    last_name: str
-    dob: date
-    age: Optional[int] = None
+    basicinfo: ProfileBase
     addresses: Optional[List[AddressCreate]] = None
     contacts: Optional[List[ContactCreate]] = None
     employments: Optional[List[EmploymentCreate]] = None
@@ -54,9 +41,10 @@ class ProfileUpdate(BaseModel):
         return value
 
 
-class ProfileResponse(ProfileBase):
+class ProfileResponse(BaseModel):
     id: int
     user_id: int
+    basicinfo: ProfileBase
     addresses: List[AddressResponse] = []
     contacts: List[ContactResponse] = []
     documents: List[DocumentResponse] = []

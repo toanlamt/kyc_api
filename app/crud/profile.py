@@ -4,10 +4,16 @@ from app.models.address import Address
 from app.models.contact import Contact
 from app.models.document import Document
 from app.models.employment import Employment
-from app.schemas.profile import ProfileCreate
+from app.schemas.profile import ProfileCreate, ProfileUpdate
 
 def create_profile(db: Session, user_id: int, profile_data: ProfileCreate):
-    new_profile = Profile(user_id=user_id, **profile_data.dict(exclude={"addresses", "contacts", "documents", "employments"}))
+    new_profile = Profile(
+        user_id=user_id,
+        first_name=profile_data.basicinfo.first_name,
+        middle_name=profile_data.basicinfo.middle_name,
+        last_name=profile_data.basicinfo.last_name,
+        dob=profile_data.basicinfo.dob,
+    )
     db.add(new_profile)
     db.commit()
     db.refresh(new_profile)
@@ -24,13 +30,19 @@ def create_profile(db: Session, user_id: int, profile_data: ProfileCreate):
     db.commit()
     return new_profile
 
-def update_profile(db: Session, user_id: int, profile_data: ProfileCreate):
+def update_profile(db: Session, user_id: int, profile_data: ProfileUpdate):
     profile = db.query(Profile).filter(Profile.user_id == user_id).first()
 
     if profile:
-        # Update main profile fields.
-        for key, value in profile_data.dict(exclude={"addresses", "contacts", "documents", "employments"}).items():
-            setattr(profile, key, value)
+        # Update fields
+        if profile_data.basicinfo.first_name:
+            profile.first_name = profile_data.basicinfo.first_name
+        if profile_data.basicinfo.middle_name is not None:
+            profile.middle_name = profile_data.basicinfo.middle_name
+        if profile_data.basicinfo.last_name:
+            profile.last_name = profile_data.basicinfo.last_name
+        if profile_data.basicinfo.dob:
+            profile.dob = profile_data.basicinfo.dob    
 
     
         db.query(Address).filter_by(profile_id=profile.id).delete()
