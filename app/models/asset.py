@@ -16,6 +16,5 @@ class Asset(Base):
     kyc_id = Column(Integer, ForeignKey("kyc.id"), nullable=False)
     asset_type = Column(Enum(AssetType), nullable=False)
     amount = Column(Numeric(15, 2), nullable=False)
-    currency = Column(String, default="USD")
     
     kyc = relationship("KYC", back_populates="assets")

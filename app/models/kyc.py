@@ -9,8 +9,8 @@ class ExperienceLevel(str, enum.Enum):
     more_than_10 = "more_than_10"
 
 class RiskTolerance(str, enum.Enum):
-    low = "10"
-    medium = "30"
+    low = "low"
+    medium = "medium"
     high = "all_in"
 
 class KYC(Base):
@@ -20,15 +20,8 @@ class KYC(Base):
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     
     # Investment Experience
-    market_experience = Column(Enum(ExperienceLevel), nullable=False)
-    risk_tolerance = Column(Enum(RiskTolerance), nullable=False)
-    
-    # Calculated Net Worth
-    total_income = Column(Numeric(15, 2), default=0)
-    total_assets = Column(Numeric(15, 2), default=0)
-    total_liabilities = Column(Numeric(15, 2), default=0)
-    total_wealth_source = Column(Numeric(15, 2), default=0)
-    net_worth = Column(Numeric(15, 2), default=0)
+    market_experience = Column(Enum(ExperienceLevel), nullable=True)
+    risk_tolerance = Column(Enum(RiskTolerance), nullable=True)
     
     # Relationships
     user = relationship("User", back_populates="kyc")

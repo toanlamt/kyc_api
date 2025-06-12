@@ -15,6 +15,5 @@ class Income(Base):
     kyc_id = Column(Integer, ForeignKey("kyc.id"), nullable=False)
     income_type = Column(Enum(IncomeType), nullable=False)
     amount = Column(Numeric(15, 2), nullable=False)
-    currency = Column(String, default="USD")
     
     kyc = relationship("KYC", back_populates="incomes")

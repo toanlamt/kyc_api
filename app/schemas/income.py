@@ -4,7 +4,6 @@ from decimal import Decimal
 class IncomeBase(BaseModel):
     income_type: str
     amount: Decimal = Field(..., gt=0)
-    currency: str = "USD"
 
 class IncomeCreate(IncomeBase):
     pass

@@ -4,7 +4,6 @@ from decimal import Decimal
 class AssetBase(BaseModel):
     asset_type: str
     amount: Decimal = Field(..., gt=0)
-    currency: str = "USD"
 
 class AssetCreate(AssetBase):
     pass

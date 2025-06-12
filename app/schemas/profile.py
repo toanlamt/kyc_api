@@ -28,6 +28,7 @@ class ProfileCreate(BaseModel):
 
 
 class ProfileUpdate(BaseModel):
+    user_id: int
     basicinfo: ProfileBase
     addresses: Optional[List[AddressCreate]] = None
     contacts: Optional[List[ContactCreate]] = None

@@ -15,6 +15,5 @@ class Liability(Base):
     kyc_id = Column(Integer, ForeignKey("kyc.id"), nullable=False)
     liability_type = Column(Enum(LiabilityType), nullable=False)
     amount = Column(Numeric(15, 2), nullable=False)
-    currency = Column(String, default="USD")
     
     kyc = relationship("KYC", back_populates="liabilities")

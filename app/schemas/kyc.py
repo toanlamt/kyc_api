@@ -1,7 +1,5 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
-from decimal import Decimal
 from app.schemas.asset import AssetCreate, AssetResponse
 from app.schemas.liability import LiabilityCreate, LiabilityResponse
 from app.schemas.income import IncomeCreate, IncomeResponse
@@ -9,8 +7,8 @@ from app.schemas.wealth_source import WealthSourceCreate, WealthSourceResponse
 
 
 class KYCBase(BaseModel):
-    market_experience: str
-    risk_tolerance: str
+    market_experience: Optional[str]
+    risk_tolerance: Optional[str]
 
 class KYCCreate(KYCBase):
     incomes: List[IncomeCreate] = []
@@ -19,6 +17,8 @@ class KYCCreate(KYCBase):
     wealth_sources: List[WealthSourceCreate] = []
 
 class KYCUpdate(BaseModel):
+    id: int
+    user_id: int
     market_experience: Optional[str] = None
     risk_tolerance: Optional[str] = None
     incomes: Optional[List[IncomeCreate]] = None
@@ -29,16 +29,10 @@ class KYCUpdate(BaseModel):
 class KYC(KYCBase):
     id: int
     user_id: int
-    total_income: Decimal
-    total_assets: Decimal
-    total_liabilities: Decimal
-    total_wealth_source: Decimal
-    net_worth: Decimal
-    incomes: List[IncomeResponse] = []
-    assets: List[AssetResponse] = []
-    liabilities: List[LiabilityResponse] = []
-    wealth_sources: List[WealthSourceResponse] = []
-    created_at: datetime
+    incomes: Optional[List[IncomeResponse]] = []
+    assets: Optional[List[AssetResponse]] = []
+    liabilities: Optional[List[LiabilityResponse]] = []
+    wealth_sources: Optional[List[WealthSourceResponse]] = []
 
     class Config:
         from_attributes = True

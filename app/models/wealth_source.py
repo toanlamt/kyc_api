@@ -14,6 +14,5 @@ class WealthSource(Base):
     kyc_id = Column(Integer, ForeignKey("kyc.id"), nullable=False)
     source_type = Column(Enum(WealthSourceType), nullable=False)
     amount = Column(Numeric(15, 2), nullable=False)
-    currency = Column(String, default="USD")
     
     kyc = relationship("KYC", back_populates="wealth_sources")

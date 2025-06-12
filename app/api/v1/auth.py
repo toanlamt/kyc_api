@@ -3,12 +3,12 @@ from fastapi.responses import JSONResponse
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
-from app.deps import get_db
-from datetime import timedelta
+from app.deps import get_db, get_current_user
 from app.core.config import settings
 from app.core.security import verify_password, create_access_token
 from app.models.user import User
 from app.schemas.user import UserCreate
+from app.schemas.profile import ProfileBase
 from app.crud import user as user_crud
 from datetime import datetime, timedelta
 from app.core.redis import redis_client
@@ -51,12 +51,15 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return response
 
 @router.post("/register")
-def register(user_data: UserCreate, db: Session = Depends(get_db)):
+def register(user_data: UserCreate, profile_data: ProfileBase, current_user: User = Depends(get_current_user),db: Session = Depends(get_db)):
+    if current_user.role != "officer":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only officer can create profile")
+    
     # Check if the user already exists.
     if db.query(User).filter(User.username == user_data.username).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
     
-    user = user_crud.create_user(db, user_data)
+    user = user_crud.create_user_with_profile_and_kyc(db, user_data, profile_data)
     return {"msg": "User registered successfully", "user_id": user.id}
 
 @router.post("/logout")
