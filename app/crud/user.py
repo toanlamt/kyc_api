@@ -6,7 +6,7 @@ from app.schemas.user import UserCreate
 from app.schemas.profile import ProfileBase
 from app.core.security import hash_password
 
-def create_user_with_profile(db: Session, user_data: UserCreate, profile_data: ProfileBase):
+def create_user_with_profile_and_kyc(db: Session, user_data: UserCreate, profile_data: ProfileBase):
     user = User(
         username=user_data.username,
         hashed_password=hash_password(user_data.password),

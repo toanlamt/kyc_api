@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, ForeignKey, Numeric, Enum
+from sqlalchemy import Column, Integer, ForeignKey, Numeric, Enum, DateTime
 from sqlalchemy.orm import relationship
 from app.db.base import Base
 import enum
+from datetime import datetime
 
 class ExperienceLevel(str, enum.Enum):
     less_than_5 = "less_than_5"
@@ -13,6 +14,12 @@ class RiskTolerance(str, enum.Enum):
     medium = "medium"
     high = "all_in"
 
+class KYCStatus(str, enum.Enum):
+    draft = "Draft"
+    pending = "Pending"
+    approved = "Approved"
+    rejected = "Rejected"
+
 class KYC(Base):
     __tablename__ = "kyc"
 
@@ -22,6 +29,11 @@ class KYC(Base):
     # Investment Experience
     market_experience = Column(Enum(ExperienceLevel), nullable=True)
     risk_tolerance = Column(Enum(RiskTolerance), nullable=True)
+
+
+    # KYC status
+    status = Column(Enum(KYCStatus), nullable=True, default=KYCStatus.draft)
+    status_updated_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
     user = relationship("User", back_populates="kyc")
