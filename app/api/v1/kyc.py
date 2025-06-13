@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.models.kyc import KYC
-from app.schemas.kyc import KYC as KYCSchema, KYCUpdate
+from app.models.profile import Profile
+from app.schemas.kyc import KYC as KYCSchema, KYCUpdate, PendingKYCResponse
 from app.crud.kyc import update_kyc
 from app.deps import get_db, get_current_user
 from app.models.user import User
@@ -22,32 +23,32 @@ async def get_all_kyc(
     kyc_records = db.query(KYC).all()
     return kyc_records
 
-@router.get("/pending", response_model=List[KYCSchema])
+@router.get("/pending", response_model=List[PendingKYCResponse])
 def get_pending_kyc_profiles(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != "officer":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only officers can view pending KYC")
 
     pending_kyc = (
         db.query(KYC)
+        .join(Profile, Profile.user_id == KYC.user_id)
         .filter(KYC.status == KYCStatus.pending)
         .order_by(KYC.status_updated_at.desc())
         .all()
     )
-    print(pending_kyc)
     return pending_kyc
 
-@router.get("/result", response_model=List[KYCSchema])
+@router.get("/result", response_model=List[PendingKYCResponse])
 def get_pending_kyc_profiles(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != "officer":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only officers can view result KYC")
 
     pending_kyc = (
         db.query(KYC)
+        .join(Profile, Profile.user_id == KYC.user_id)
         .filter(KYC.status.notin_([KYCStatus.draft, KYCStatus.pending]))
         .order_by(KYC.status_updated_at.desc())
         .all()
     )
-    print(pending_kyc)
     return pending_kyc
 
 
@@ -74,7 +75,7 @@ async def update_kyc_endpoint(
     if current_user.role != "user":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only normal users can update profile")
     
-    kyc = db.query(KYC).filter(data.user_id == current_user.id).first()
+    kyc = db.query(KYC).filter(KYC.user_id == data.user_id).first()
     if not kyc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="KYC record not found")
     

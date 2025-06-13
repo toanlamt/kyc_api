@@ -4,6 +4,7 @@ from app.schemas.asset import AssetCreate, AssetResponse
 from app.schemas.liability import LiabilityCreate, LiabilityResponse
 from app.schemas.income import IncomeCreate, IncomeResponse
 from app.schemas.wealth_source import WealthSourceCreate, WealthSourceResponse
+from app.schemas.profile import ProfileBase
 from app.models.kyc import ExperienceLevel, RiskTolerance, KYCStatus
 from datetime import datetime
 
@@ -39,3 +40,9 @@ class KYC(KYCBase):
 
     class Config:
         from_attributes = True
+
+class PendingKYCResponse(KYC):
+    profile: ProfileBase
+
+    class Config:
+        orm_mode = True        

@@ -41,6 +41,7 @@ class KYC(Base):
     assets = relationship("Asset", back_populates="kyc", cascade="all, delete-orphan")
     liabilities = relationship("Liability", back_populates="kyc", cascade="all, delete-orphan")
     wealth_sources = relationship("WealthSource", back_populates="kyc", cascade="all, delete-orphan")
+    profile = relationship("Profile", uselist=False, primaryjoin="foreign(Profile.user_id) == KYC.user_id")
 
 
 
