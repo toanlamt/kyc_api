@@ -5,6 +5,8 @@ from app.models.income import Income
 from app.models.asset import Asset
 from app.models.liability import Liability
 from app.models.wealth_source import WealthSource
+from datetime import datetime
+from app.models.kyc import KYCStatus
 
 def update_kyc(db: Session, kyc_id: int, data: KYCUpdate) -> KYC:
     kyc = db.query(KYC).filter(KYC.id == kyc_id).first()
@@ -31,6 +33,10 @@ def update_kyc(db: Session, kyc_id: int, data: KYCUpdate) -> KYC:
         db.query(WealthSource).filter_by(kyc_id=kyc.id).delete()
         for wealth_source in data.wealth_sources:
             db.add(WealthSource(kyc_id=kyc.id, **wealth_source.dict()))
+
+      # Update KYC status to Pending and set update timestamp
+    kyc.status = KYCStatus.pending
+    kyc.status_updated_at = datetime.utcnow()
 
     db.commit()
     db.refresh(kyc)

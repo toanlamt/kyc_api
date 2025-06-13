@@ -15,10 +15,10 @@ class RiskTolerance(str, enum.Enum):
     high = "all_in"
 
 class KYCStatus(str, enum.Enum):
-    draft = "Draft"
-    pending = "Pending"
-    approved = "Approved"
-    rejected = "Rejected"
+    draft = "draft"
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
 
 class KYC(Base):
     __tablename__ = "kyc"

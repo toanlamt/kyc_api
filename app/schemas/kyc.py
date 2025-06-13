@@ -4,7 +4,8 @@ from app.schemas.asset import AssetCreate, AssetResponse
 from app.schemas.liability import LiabilityCreate, LiabilityResponse
 from app.schemas.income import IncomeCreate, IncomeResponse
 from app.schemas.wealth_source import WealthSourceCreate, WealthSourceResponse
-
+from app.models.kyc import ExperienceLevel, RiskTolerance, KYCStatus
+from datetime import datetime
 
 class KYCBase(BaseModel):
     market_experience: Optional[str]
@@ -19,8 +20,8 @@ class KYCCreate(KYCBase):
 class KYCUpdate(BaseModel):
     id: int
     user_id: int
-    market_experience: Optional[str] = None
-    risk_tolerance: Optional[str] = None
+    market_experience: Optional[ExperienceLevel] = None
+    risk_tolerance: Optional[RiskTolerance] = None
     incomes: Optional[List[IncomeCreate]] = None
     assets: Optional[List[AssetCreate]] = None
     liabilities: Optional[List[LiabilityCreate]] = None
@@ -29,6 +30,8 @@ class KYCUpdate(BaseModel):
 class KYC(KYCBase):
     id: int
     user_id: int
+    status: KYCStatus
+    status_updated_at: datetime
     incomes: Optional[List[IncomeResponse]] = []
     assets: Optional[List[AssetResponse]] = []
     liabilities: Optional[List[LiabilityResponse]] = []
