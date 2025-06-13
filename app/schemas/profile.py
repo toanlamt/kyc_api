@@ -13,6 +13,10 @@ class ProfileBase(BaseModel):
     dob: date
     age: Optional[int] = None
 
+class ProfileBasic(ProfileBase):
+    id: int
+    user_id: int
+
 class ProfileCreate(BaseModel):
     basicinfo: ProfileBase
     addresses: List[AddressCreate] = []

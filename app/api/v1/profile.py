@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.models.user import User
-from app.schemas.profile import ProfileResponse, ProfileCreate, ProfileUpdate
+from app.schemas.profile import ProfileResponse, ProfileCreate, ProfileUpdate, ProfileBasic
 from app.models.profile import Profile
 from app.crud.profile import create_profile, update_profile
 from app.deps import get_db, get_current_user
@@ -38,6 +38,30 @@ async def get_all_profile(
         )
         for profile in profiles
     ]
+
+@router.get("/basic/{user_id}", response_model=ProfileBasic)
+async def get_basic_profile_by_id(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.role != "officer":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only officer can get basic profile")
+    
+    profile = db.query(Profile).filter(Profile.user_id == user_id).first()
+    if not profile:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+    
+    return ProfileBasic(
+        id=profile.id,
+        user_id=profile.user_id,
+        first_name=profile.first_name,
+        middle_name=profile.middle_name,
+        last_name=profile.last_name,
+        dob=profile.dob,
+        age=profile.age
+    )
+
 @router.get("/{user_id}", response_model=ProfileResponse)
 async def get_profile_by_id(
     user_id: int,
